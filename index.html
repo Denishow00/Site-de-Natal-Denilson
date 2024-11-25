@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Desejos de Natal</title>
+    <style>
+        /* Resetando margens e padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fundo da página */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20201105/pngtree-merry-christmas-wood-plank-texture-background-image_457776.jpg'); /* Imagem de fundo (Natal) */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+            padding: 0 10px;
+            background-attachment: fixed;
+            overflow: hidden;
+        }
+
+        /* Container da caixa de desejos */
+        .container {
+            background-color: rgba(173, 216, 230, 0.9); /* Azul claro */
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            backdrop-filter: blur(10px); /* Desfoque de fundo */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .container:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Título */
+        h1 {
+            color: #e74c3c; /* Vermelho */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Estilo do campo de input */
+        input {
+            width: 70%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            background-color: #fff;
+            color: #333;
+        }
+
+        input:focus {
+            border-color: #e74c3c;
+        }
+
+        /* Estilo do botão de adicionar */
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #e74c3c;
+            color:white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color:red;
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Lista de desejos */
+        ul {
+            list-style-type: none;
+            margin-top: 30px;
+            padding-left: 0;
+            height: auto;
+            overflow: hidden; /* Remover a barra de rolagem */
+            transition: all 0.3s ease;
+        }
+
+        li {
+            background-color:black;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        li:hover {
+            background-color: black;
+            transform: translateX(5px);
+        }
+
+        li span {
+            flex-grow: 1;
+        }
+
+        .remove-btn {
+            background-color: #e74c3c;
+            color:white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background-color: red;
+            transform: translateY(-3px);
+        }
+
+        .remove-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Responsividade para telas pequenas */
+        @media (max-width: 600px) {
+            input {
+                width: 60%;
+            }
+
+            button {
+                padding: 10px 18px;
+            }
+
+            li {
+                font-size: 1em;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Minha Lista de Desejos de Natal</h1>
+
+        <!-- Formulário para adicionar um novo desejo -->
+        <div>
+            <input type="text" id="wishInput" placeholder="Digite seu desejo de Natal..." aria-label="Digite seu desejo de Natal...">
+            <button onclick="addWish()" aria-label="Adicionar desejo">Adicionar Desejo</button>
+        </div>
+
+        <!-- Lista de desejos -->
+        <ul id="wishList"></ul>
+    </div>
+
+    <script>
+        // Função para salvar os desejos no Local Storage
+        function saveWishes() {
+            const wishList = document.getElementById("wishList");
+            const wishes = [];
+            wishList.querySelectorAll('li').forEach(li => {
+                wishes.push(li.querySelector('span').textContent);
+            });
+            localStorage.setItem('wishes', JSON.stringify(wishes));
+        }
+
+        // Função para carregar os desejos do Local Storage
+        function loadWishes() {
+            const savedWishes = JSON.parse(localStorage.getItem('wishes')) || [];
+            savedWishes.forEach(wishText => {
+                addWishToList(wishText);
+            });
+        }
+
+        // Função para adicionar um desejo à lista
+        function addWish() {
+            const wishInput = document.getElementById("wishInput");
+            const wishText = wishInput.value.trim();
+
+            // Verificar se o campo de desejo não está vazio
+            if (wishText !== "") {
+                addWishToList(wishText);
+                wishInput.value = "";
+                wishInput.focus();
+
+                saveWishes(); // Salva os desejos no localStorage
+            } else {
+                alert("Por favor, digite um desejo antes de adicionar!");
+            }
+        }
+
+        // Função para adicionar um desejo à lista visualmente
+        function addWishToList(wishText) {
+            const wishList = document.getElementById("wishList");
+
+            // Criar um novo item de lista
+            const li = document.createElement("li");
+            const span = document.createElement("span");
+            span.textContent = wishText;
+
+            // Botão para remover o desejo
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remover";
+            removeButton.classList.add("remove-btn");
+            removeButton.onclick = function () {
+                li.remove();  // Remove o item da lista
+                saveWishes(); // Salva as mudanças no localStorage
+            };
+
+            // Adicionar o botão de remoção e o texto ao item da lista
+            li.appendChild(span);
+            li.appendChild(removeButton);
+
+            // Adicionar a classe wish-added para mudar fundo e cor do texto
+            li.classList.add('wish-added');
+
+            // Adicionar o item à lista
+            wishList.appendChild(li);
+        }
+
+        // Permitir que o usuário adicione um desejo pressionando Enter
+        document.getElementById("wishInput").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                addWish();
+            }
+        });
+
+        // Carregar desejos ao carregar a página
+        window.onload = loadWishes;
+    </script>
+
+</body>
+</html>
